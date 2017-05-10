@@ -31,8 +31,8 @@ general steps (see below for details)
     export LD_LIBRARY_PATH=/usr/local/lib   # temporary
     sudo ldconfig /usr/local/lib            # permanently
 
-2. download scan_fuzzyblocks plugin
-    (insert text here)
+2. download the scan_fuzzyblocks plugin
+    git clone --recursive https://github.com/SofaPistol/scan_fuzzyblocks.git
 
 3. run install script
    the script builds sdhash, mrshv2 and the plugin and installs the plugin to '/usr/local/lib/bulk_extractor',
