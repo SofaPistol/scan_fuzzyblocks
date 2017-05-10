@@ -1,0 +1,17 @@
+#!/bin/bash
+basedir=$(dirname "$BASH_SOURCE")
+
+cd $basedir
+cd sdhash
+make
+cd ..
+cd mrshv2
+make
+cd ..
+if [[ $BE_ABS_PATH ]]
+	then
+		make BE_ABS_PATH=$BE_ABS_PATH
+	else
+		make
+	fi
+sudo make install

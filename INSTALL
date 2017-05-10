@@ -1,0 +1,57 @@
+scan_fuzzyblocks installation instructions
+
+general steps (see below for details)
+1. install prerequisites
+2. download scan_fuzzyblocks plugin
+3. run install script
+
+1. install prerequisites
+   install bulk_extractor with whatever dependencies nessecary, detailed instructions here:
+    https://github.com/simsong/bulk_extractor/wiki/Installing-bulk_extractor
+   
+   what worked for me on ubuntu, some packages might not even be needed:
+    sudo apt-get install gcc g++ flex libewf-dev libssl-dev git libtool libtool-bin autoconf automake libexpat1 libexpat1-dev libxml2-dev libtre-dev
+    git clone --recursive https://github.com/simsong/bulk_extractor.git
+    cd bulk_extractor
+    sh bootstrap.sh
+    ./configure
+
+   install an older version of googles protobuf library, which is needed by sdhash:
+    https://github.com/google/protobuf/releases/tag/v2.5.0
+    tar -zxvf protobuf-2.5.0.tar.gz
+    cd protobuf-2.5.0
+    (autoreconf -i)     # if a configure error occurs
+    ./configure
+    make
+    sudo make install
+
+   check if protobuf is in the library path, so that applications can find it: 
+    protoc --version
+   if it fails add the protobuf lib dir to the ld path e.g.:
+    export LD_LIBRARY_PATH=/usr/local/lib   # temporary
+    sudo ldconfig /usr/local/lib            # permanently
+
+2. download scan_fuzzyblocks plugin
+    (insert text here)
+
+3. run install script
+   the script builds sdhash, mrshv2 and the plugin and installs the plugin to '/usr/local/lib/bulk_extractor',
+   which is one of the default paths where bulk_extractor looks for plugins
+   run the script like this:
+    BE_ABS_PATH=path/to/bulk_extractor ./fuz-install
+   BE_ABS_PATH (default=~/bulk_extractor) tells the script the location to bulk_extractor for certain dependecies
+
+   if you wish to install the plugin somewhere else, build it manually:
+    cd sdhash
+    make
+    cd mrshv2
+    make
+    cd scan_fuzzyblocks
+    make BE_ABS_PATH=path/to/bulk_extractor
+   then copy the plugin .so file to the desired location and
+   add its destination to the bulk_extractor BE_PATH environment variable, so bulk_extractor knows how to find it e.g.:
+    export BE_PATH=path/to/plugin	                            # temporary
+    appending above line to a startup script like ~/.profile    # permanently
+    
+finally run bulk_extractor without options and check if fuzzyblocks is listed under 'scanners disabled by default'
+refer to MANUAL for information on using the plugin

@@ -1,0 +1,64 @@
+This document covers setable options for the scan_fuzzyblocks scanner plugin
+
+General bulk_extractor usage and commands are covered in the bulk_extractor user manual:
+    http://digitalcorpora.org/downloads/bulk_extractor/BEUsersManual.pdf
+
+General usage of the plugin:
+    bulk_extractor -E fuzzyblocks -o <output_directory> -S <scanner_option> <input_file>
+
+    -E  Enables the specified scanner (fuzzyblocks) and disables all others
+        Use '-e' to enable the scanner and keep other enabled scanners enabled
+    -o  Specifies the output directory
+    -S  Options specific to scanners are issued starting with an -S
+
+Available scan_fuzzyblocks scanner options:
+    -S fuz_mode                 Selects the operational mode of the scanner
+        fuz_mode=none           The scanner is active but performs no action (default)
+        fuz_mode=import         Input file is hashed and block hashes are written to fuz_hashes.txt in the output directory
+        fuz_mode=scan           Input file is hashed and compared with hashes in the file specified in fuz_hashfile
+                                The results are written to fuz_scores.txt to in the output directory
+
+    -S fuz_hash_type            Selects the similarity hash algorithm
+        fuz_hash_type=sdhash    Blocks are hashed with sdhash (default)
+        fuz_hash_type=mrshv2    Blocks are hashed with mrshv2
+
+    -S fuz_threshold            Selects the threshold for similirity scores (default=10)
+                                Valid only in scan mode
+
+    -S fuz_hashfile             Selects the path to the hashfile used for comparision
+                                Valid only in scan mode (default=fuz_hashfile.txt in the current working directory)
+
+    -S fuz_block_size           Selects the block size to hash, in bytes (default=4096)
+                                For mrshv2 values > 8192 are reset to 8192 bytes, which is currently the maximum possible blocksize
+                                so that a bloomfilter can hold the theoretical maximum amount of block features
+                                (Has to do with how "feature sizes" for mrshv2 are hardcoded at the moment)
+                                ?possible solution by dynamically scaling the feature size depending on the size of a hashed block?)
+
+    -S fuz_step_size            Selects the step size, in bytes. Scans and imports along this step value (default=4096)
+                                Every <fuz_step_size> bytes a block of <fuz_block_size> bytes is hashed
+
+Examples:
+Hashes testfile with sdhash and stores the block hashes in fuz_hashes.txt in the output directory
+    bulk_extractor -E fuzzyblocks -o /home/xyz/output -S fuz_mode=import -S fuz_hash_type=sdhash testfile
+
+Hashes testfile with mrshv2 and compares the block hashes with hashes from a previously generated fuz_hashes.txt file
+    bulk_extractor -E fuzzyblocks -o /home/xyz/output -S fuz_mode=scan -S fuz_hash_type=mrshv2 testfile
+
+Interpreting the output:
+    In import mode the plugin creates a text file fuz_hashes.txt, which consists of the block similarity hashes of the specified input file
+    This file acts as a naive approach to a "database" of hashes that can be compared against e.g. hashes of a drive image
+
+    In scan mode the plugin generates the the block similarity hashes of the input (e.g. file) and compares them against a previously
+    created hash file (fuz_hashes.txt).
+    This is done as two-set-comparision, where every block of the first set is compared against every block of the second set.
+
+    The output of the comparision is saved to fuz_scores.txt. A line might look like this:
+        testfile-8192|testimage-8544480|100
+    This indicates that the block of testfile, 8192 bytes into the bytestream and the block of testimage, 8544480 bytes in are likely 
+    to be the same or nearly identical enough for the algorithm to calculate a similarity score of 100
+    The part after the filename is the forensic path and doesn't have to be a single numeric value (e.g. 11052168704-GZIP-3437)
+    More information on foresic paths and recursive scanners can be found in the bulk_extractor manual:
+        http://digitalcorpora.org/downloads/bulk_extractor/BEUsersManual.pdf
+
+It is worth mentioning that the output directory is created by bulk_extractor and must not exist for each run
+This is so that bulk_extractor is able to resume work after a timeout/crash by issuing the previous command again

@@ -1,0 +1,3 @@
+[submodule "sdhash"]
+	path = sdhash
+	url = https://github.com/sdhash/sdhash.git

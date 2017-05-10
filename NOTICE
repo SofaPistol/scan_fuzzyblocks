@@ -1,0 +1,23 @@
+Copyright 2016 Daniel Gasperschitz
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+scan_fuzzyblocks uses the codebase of sdhash and mrshv2:
+sdhash Copyright (C) Vassil Roussev and Candice Quates
+Under apache 2.0 license, additional copyright information in sdhash/
+Implemented as git submodule from https://github.com/sdhash/sdhash
+
+mrshv2 Copyright (C) Frank Breitinger and Mustafa Karabat
+http://www.fbreitinger.de/wp-content/uploads/2015/06/mrsh_v2.0.zip
+minor modifications were made to some of the source files

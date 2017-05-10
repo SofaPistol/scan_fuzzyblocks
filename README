@@ -1,0 +1,28 @@
+Scan_fuzzyblocks is a bulk_extractor scanner plugin for generating and
+comparing blockwise similarity hashes. The plugin is designed for comparing
+blocks of arbitrary inputs like files or disk images to identify and locate
+fragments of data that share similarities. Its original use case is to scan
+bulks of data on the byte level for different versions of files and pinpoint
+their locations.
+
+It uses the implementations of the similarity hashing / approximate matching
+schemes sdhash and mrshv2, but deviates from them in certain aspects.
+Hashes are generated on a per-block basis, meaning that every hashed block
+(e.g. sector) of the input has its own similarity hash including a name that
+tracks the position of the block via the bulk_extractor forensic path.
+While sdhash already provides the ability to generate block hashes,
+a comparision can only yield information if and to what extent the compared
+data shares commonalities, e.g. a variation of a file is present on a drive.
+By default it cannot answer how many similar files are present and where they
+are located. Scan_fuzzyblocks aims to fill this gap. A comparision results in
+a list of compared blocks and corresponding similarity scores, where every
+block of the first set (e.g. file) is compared against every block of the
+second set (e.g. drive). Each block is identifiable and traceable by its
+forensic path. 
+The bulk_extractor infrastructure allows the plugin to operate on the byte
+level and forgo OS/filesystem structures, scan unallocated blocks as well as
+certain compressed or ecoded data and make use of heavy CPU parallelization.
+
+Installation instructions can be found in the INSTALL file.
+Use of the plugin is described in the MANUAL file.
+Copyright information is found in the LICENCE and NOTICE file.
