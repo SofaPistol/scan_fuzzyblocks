@@ -10,15 +10,9 @@
 #include <stdint.h>
 #include "../header/config.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 FILE    *getFileHandle(char *filename);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* HELPER_H */
 

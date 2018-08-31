@@ -1,13 +1,21 @@
 #!/bin/bash
-basedir=$(dirname "$BASH_SOURCE")
+basedir="$( cd "$(dirname "$BASH_SOURCE")" ; pwd -P )"
+sdhashdir="$basedir/sdhash"
+mrshv2dir="$basedir/mrshv2"
+ssdeepdir="$basedir/ssdeep"
+
+cd $sdhashdir
+make
+cd $mrshv2dir
+make
+cd $ssdeepdir
+./bootstrap
+./configure
+make
+sudo mkdir -p /usr/local/lib/bulk_extractor
+sudo cp $ssdeepdir/.libs/libfuzzy.so* /usr/local/lib/bulk_extractor
 
 cd $basedir
-cd sdhash
-make
-cd ..
-cd mrshv2
-make
-cd ..
 if [[ $BE_ABS_PATH ]]
 	then
 		make BE_ABS_PATH=$BE_ABS_PATH

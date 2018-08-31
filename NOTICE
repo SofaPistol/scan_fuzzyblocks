@@ -1,23 +1,32 @@
 Copyright 2016 Daniel Gasperschitz
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    http://www.apache.org/licenses/LICENSE-2.0
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+----------
 
-scan_fuzzyblocks uses the codebase of sdhash and mrshv2:
+scan_fuzzyblocks uses the codebase of sdhash, mrshv2 and ssdeep,
+see the respective directories for additional copyright information
+
 sdhash Copyright (C) Vassil Roussev and Candice Quates
-Under apache 2.0 license, additional copyright information in sdhash/
+Under Apache 2.0 license
 Implemented as git submodule from https://github.com/sdhash/sdhash
 
 mrshv2 Copyright (C) Frank Breitinger and Mustafa Karabat
 http://www.fbreitinger.de/wp-content/uploads/2015/06/mrsh_v2.0.zip
-minor modifications were made to some of the source files
+minor modifications were made to some of the header files
+
+ssdeep Copyright (C) Jesse Kornblum, Helmut Grohne and Tsukasa OI
+Under GNU General Public License v2
+Implemented as git submodule from https://github.com/ssdeep-project/ssdeep
+

@@ -31,9 +31,8 @@ typedef struct FINGERPRINT {
         
 }FINGERPRINT;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
+
 
 FINGERPRINT         *init_empty_fingerprint();
 FINGERPRINT         *init_fingerprint_for_file(FILE *handle, char *filename);
@@ -49,9 +48,6 @@ double              compute_e_min(int blocks_in_bf1, int blocks_in_bf2);
 void add_new_bloomfilter(FINGERPRINT *fp, BLOOMFILTER *bf);
 void                print_fingerprint(FINGERPRINT *fp);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* BLOOM_H */
 

@@ -19,27 +19,30 @@ Available scan_fuzzyblocks scanner options:
                                 The results are written to fuz_scores.txt to in the output directory
 
     -S fuz_hash_type            Selects the similarity hash algorithm
-        fuz_hash_type=sdhash    Blocks are hashed with sdhash (default)
+        fuz_hash_type=sdhash-dd Blocks are hashed with sdhash-dd (default).
+				In this mode only 1 bloomfilter per block is used. If more than the maximum amount of features
+				per bloomfilter are identified, the best features will be chosen.
+	fuz_hash_type=sdhash    Blocks are hashed with sdhash stream mode
         fuz_hash_type=mrshv2    Blocks are hashed with mrshv2
+	fuz_hash_type=mrshv2    Blocks are hashed with ssdeep
 
     -S fuz_threshold            Selects the threshold for similirity scores (default=10)
                                 Valid only in scan mode
 
-    -S fuz_hashfile             Selects the path to the hashfile used for comparision
+    -S fuz_hashfile             Selects the path to the hashfile used for comparison
                                 Valid only in scan mode (default=fuz_hashfile.txt in the current working directory)
 
-    -S fuz_block_size           Selects the block size to hash, in bytes (default=4096)
-                                For mrshv2 values > 8192 are reset to 8192 bytes, which is currently the maximum possible blocksize
-                                so that a bloomfilter can hold the theoretical maximum amount of block features
-                                (Has to do with how "feature sizes" for mrshv2 are hardcoded at the moment)
-                                ?possible solution by dynamically scaling the feature size depending on the size of a hashed block?)
+    -S fuz_block_size           Selects the block size to hash, in bytes (default=4096)                               
 
-    -S fuz_step_size            Selects the step size, in bytes. Scans and imports along this step value (default=4096)
+    -S fuz_step_size            Selects the step size, in bytes. Scans and imports along this step value (default=fuz_block_size)
                                 Every <fuz_step_size> bytes a block of <fuz_block_size> bytes is hashed
+
+    -S fuz_sep                  Selects the seperator for the score file (default="|")
+                                Valid only in scan mode
 
 Examples:
 Hashes testfile with sdhash and stores the block hashes in fuz_hashes.txt in the output directory
-    bulk_extractor -E fuzzyblocks -o /home/xyz/output -S fuz_mode=import -S fuz_hash_type=sdhash testfile
+    bulk_extractor -E fuzzyblocks -o /home/xyz/output -S fuz_mode=import -S fuz_hash_type=sdhash-dd testfile
 
 Hashes testfile with mrshv2 and compares the block hashes with hashes from a previously generated fuz_hashes.txt file
     bulk_extractor -E fuzzyblocks -o /home/xyz/output -S fuz_mode=scan -S fuz_hash_type=mrshv2 testfile
@@ -50,9 +53,9 @@ Interpreting the output:
 
     In scan mode the plugin generates the the block similarity hashes of the input (e.g. file) and compares them against a previously
     created hash file (fuz_hashes.txt).
-    This is done as two-set-comparision, where every block of the first set is compared against every block of the second set.
+    This is done as two-set-comparison, where every block of the first set is compared against every block of the second set.
 
-    The output of the comparision is saved to fuz_scores.txt. A line might look like this:
+    The output of the comparison is saved to fuz_scores.txt. A line might look like this:
         testfile-8192|testimage-8544480|100
     This indicates that the block of testfile, 8192 bytes into the bytestream and the block of testimage, 8544480 bytes in are likely 
     to be the same or nearly identical enough for the algorithm to calculate a similarity score of 100
@@ -61,4 +64,4 @@ Interpreting the output:
         http://digitalcorpora.org/downloads/bulk_extractor/BEUsersManual.pdf
 
 It is worth mentioning that the output directory is created by bulk_extractor and must not exist for each run
-This is so that bulk_extractor is able to resume work after a timeout/crash by issuing the previous command again
+This is so that bulk_extractor can resume work after a timeout/crash by issuing the previous command again

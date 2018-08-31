@@ -3,9 +3,13 @@ PROGRAM=scan_fuzzyblocks.so
 # paths to external dependencies.
 MRSHV2_PATH=mrshv2
 SDHASH_PATH=sdhash
+SSDEEP_PATH=ssdeep
 
 # bulk extractor full path variable. overwrite if necessary.
 BE_ABS_PATH=$(HOME)/bulk_extractor
+
+# path to the ssdeep shared lib, same as scan_fuzzyblocks.so install dir
+SSDEEP_LIB_PATH=/usr/local/lib/bulk_extractor
 
 CXX=g++
 LD=$(CXX)
@@ -16,18 +20,21 @@ LDFLAGS=-shared
 INCLUDES=-I./ \
 	-I$(BE_ABS_PATH) \
 	-I$(BE_ABS_PATH)/src \
-	-I$(SDHASH_PATH)/external
+	-I$(SDHASH_PATH)/external \
+	-I$(SSDEEP_PATH)
 
 LIBRARY_PATHS=-L$(SDHASH_PATH) \
 	-L$(SDHASH_PATH)/external/stage/lib \
-	-L$(MRSHV2_PATH)
+	-L$(MRSHV2_PATH) \
+	-L$(SSDEEP_LIB_PATH)
 
 LIBRARIES=-lprotobuf \
 	-lsdbf \
 	-lmrshv2 \
 	-lboost_system \
 	-lboost_filesystem \
-	-lboost_thread
+	-lboost_thread \
+	-lfuzzy -Wl,-rpath=$(SSDEEP_LIB_PATH)
 
 C_SOURCE_FILES=
 CXX_SOURCE_FILES=src/scan_fuzzyblocks.cpp
@@ -58,7 +65,7 @@ $(PROGRAM): $(OBJECT_FILES)
 # copy plugin to one of bulk_extractors search directories.
 install:
 	mkdir -p /usr/local/lib/bulk_extractor
-	cp $(PROGRAM) /usr/local/lib/bulk_extractor
+	mv $(PROGRAM) /usr/local/lib/bulk_extractor
 
 # clean-up routine.
 clean:

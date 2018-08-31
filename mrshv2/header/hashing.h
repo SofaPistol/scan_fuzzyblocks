@@ -15,18 +15,12 @@
 #include "fingerprint.h"
 #include "bloomfilter.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 
 int         hashFileToFingerprint(FINGERPRINT *fingerprint, FILE *handle);
 uint32      roll_hashx(unsigned char c, uchar window[], uint32 rhData[]);
 uint32      djb2x(unsigned char c, uchar window[], unsigned int n);
 int         hashPacketBuffer(FINGERPRINT *bloom,const unsigned char *packet, const size_t length);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* HASHING_H */
 

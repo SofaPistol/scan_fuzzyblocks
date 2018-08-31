@@ -31,9 +31,7 @@ typedef struct{
     long    length;
 }MATCH_RESULT;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 
 FINGERPRINT_LIST    *init_empty_fingerprintList();
 FINGERPRINT_LIST 	*init_fingerprintList_for_ListFile(char *filename);
@@ -49,9 +47,7 @@ void                print_fingerprintList(FINGERPRINT_LIST *fpl);
 
 unsigned int        read_fingerprint_file(FINGERPRINT_LIST *bloom_arr, FILE *handle);
 
-#ifdef __cplusplus
-}
-#endif
+
 
 #endif	/* BLOOM_H */
 

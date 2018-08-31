@@ -24,9 +24,7 @@ typedef struct BLOOMFILTER {
     
 } BLOOMFILTER;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 
 BLOOMFILTER     *init_empty_BF();
 void            destroy_bf(BLOOMFILTER *bf);
@@ -38,9 +36,6 @@ unsigned short  bloom_common_bits(unsigned char *bit_array_one, unsigned char *b
 void            add_hash_to_bloomfilter(BLOOMFILTER *bf, uint64 hash_value);
 void            convert_hex_binary(const unsigned char *hex_string, BLOOMFILTER *bf);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* BLOOM_H */
 

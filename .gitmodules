@@ -1,3 +1,6 @@
 [submodule "sdhash"]
 	path = sdhash
 	url = https://github.com/sdhash/sdhash.git
+[submodule "ssdeep"]
+	path = ssdeep
+	url = https://github.com/ssdeep-project/ssdeep.git

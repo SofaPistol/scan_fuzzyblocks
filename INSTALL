@@ -15,6 +15,8 @@ general steps (see below for details)
     cd bulk_extractor
     sh bootstrap.sh
     ./configure
+    make
+    sudo make install
 
    install an older version of googles protobuf library, which is needed by sdhash:
     https://github.com/google/protobuf/releases/tag/v2.5.0
@@ -27,29 +29,34 @@ general steps (see below for details)
 
    check if protobuf is in the library path, so that applications can find it: 
     protoc --version
-   if it fails add the protobuf lib dir to the ld path e.g.:
-    export LD_LIBRARY_PATH=/usr/local/lib   # temporary
-    sudo ldconfig /usr/local/lib            # permanently
+   if it fails refresh linker cache:
+    sudo ldconfig
 
 2. download the scan_fuzzyblocks plugin
     git clone --recursive https://github.com/SofaPistol/scan_fuzzyblocks.git
 
 3. run install script
-   the script builds sdhash, mrshv2 and the plugin and installs the plugin to '/usr/local/lib/bulk_extractor',
+   the script builds sdhash, mrshv2, ssdeep and the plugin and installs the plugin to '/usr/local/lib/bulk_extractor',
    which is one of the default paths where bulk_extractor looks for plugins
    run the script like this:
+   if bulk_extractor is installed in ~/bulk_extractor:
+    ./fuz-install
+   otherwise, specify the path to the bulk_extractor dir (needed for certain dependencies):
     BE_ABS_PATH=path/to/bulk_extractor ./fuz-install
-   BE_ABS_PATH (default=~/bulk_extractor) tells the script the location to bulk_extractor for certain dependecies
 
    if you wish to install the plugin somewhere else, build it manually:
     cd sdhash
     make
     cd mrshv2
     make
+    cd ssdeepdir
+    ./bootstrap
+    ./configure
+    make
     cd scan_fuzzyblocks
-    make BE_ABS_PATH=path/to/bulk_extractor
+    make BE_ABS_PATH=path/to/bulk_extractor SSDEEP_LIB_PATH=/path/to/ssdeep_so_files
    then copy the plugin .so file to the desired location and
-   add its destination to the bulk_extractor BE_PATH environment variable, so bulk_extractor knows how to find it e.g.:
+   add the path to the bulk_extractor BE_PATH environment variable, so bulk_extractor knows how to find it e.g.:
     export BE_PATH=path/to/plugin	                            # temporary
     appending above line to a startup script like ~/.profile    # permanently
     
