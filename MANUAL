@@ -20,11 +20,11 @@ Available scan_fuzzyblocks scanner options:
 
     -S fuz_hash_type            Selects the similarity hash algorithm
         fuz_hash_type=sdhash-dd Blocks are hashed with sdhash-dd (default).
-				In this mode only 1 bloomfilter per block is used. If more than the maximum amount of features
-				per bloomfilter are identified, the best features will be chosen.
-	fuz_hash_type=sdhash    Blocks are hashed with sdhash stream mode
+                                In this mode only 1 bloomfilter per block is used. If more than the maximum amount of features
+                                per bloomfilter are identified, the best features will be chosen.
+	    fuz_hash_type=sdhash    Blocks are hashed with sdhash stream mode
         fuz_hash_type=mrshv2    Blocks are hashed with mrshv2
-	fuz_hash_type=mrshv2    Blocks are hashed with ssdeep
+	    fuz_hash_type=ssdeep    Blocks are hashed with ssdeep
 
     -S fuz_threshold            Selects the threshold for similirity scores (default=10)
                                 Valid only in scan mode
