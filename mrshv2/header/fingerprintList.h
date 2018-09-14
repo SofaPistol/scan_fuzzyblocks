@@ -34,7 +34,7 @@ typedef struct{
 
 
 FINGERPRINT_LIST    *init_empty_fingerprintList();
-FINGERPRINT_LIST 	*init_fingerprintList_for_ListFile(char *filename);
+FINGERPRINT_LIST    *init_fingerprintList_for_ListFile(char *filename);
 int                 fingerprintList_destroy(FINGERPRINT_LIST *fpl);
 
 void                add_new_fingerprint(FINGERPRINT_LIST *fpl, FINGERPRINT *fp);

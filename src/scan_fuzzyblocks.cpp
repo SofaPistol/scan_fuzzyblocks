@@ -17,15 +17,12 @@
 #include "be13_api/bulk_extractor_i.h"
 
 // sdhash
-#include "sdhash/sdbf/sdbf_defines.h"
 #include "sdhash/sdbf/sdbf_class.h"
 
 // mrshv2
 extern "C" {
 #include "mrshv2/header/config.h"
 #include "mrshv2/header/hashing.h"
-#include "mrshv2/header/bloomfilter.h"
-#include "mrshv2/header/fingerprint.h"
 #include "mrshv2/header/fingerprintList.h"
 }
 
@@ -53,8 +50,7 @@ static bool fuz_sdhash_dd = true;
 enum mode_type_t {MODE_NONE, MODE_SCAN, MODE_IMPORT};
 static mode_type_t scanner_mode = MODE_NONE;
 
-// mrshv2s config.h declares a MODES struct that holds variables needed in different parts of the program (e.g. for fingerprint comparison)
-// config.h also defines the *mode pointer for this struct
+// mrshv2s config.h declares a MODES struct used in different parts of the program (e.g. for fingerprint comparison)
 // not to be confused with the above mode_type_t scanner_mode
 MODES *mode = NULL;
 
@@ -70,7 +66,7 @@ static void do_ssdeep_scan(const class scanner_params &sp, const recursion_contr
 // detect if block is empty
 inline bool empty_sbuf(const sbuf_t &sbuf)
 {
-    for (size_t i=1; i<sbuf.bufsize; i++) {
+    for (size_t i = 1; i < sbuf.bufsize; i++) {
         if (sbuf[i] != sbuf[0]) {
             return false;
         }
@@ -87,12 +83,10 @@ inline void fuz_sdbf_set(const char *fname, sdbf_set *newset)
         if (ifs.is_open()) {
             while(std::getline(ifs, line)) {
 
-                if (line.length()==0) 
-                    break;
-                    
-                if (line[0] == '#')
-                    // skip comments
-                    continue;
+                if (line.length()==0) break;
+                
+                // skip comments
+                if (line[0] == '#') continue;
                
                 newset->set_name((string)fname);
                 sdbf *sdbfm = new sdbf(line);
@@ -115,7 +109,8 @@ inline std::string fuz_compare_two_sets(sdbf_set *set1, sdbf_set *set2, int32_t 
     out.fill('0');
     int tend = set2->size();
     int qend = set1->size();
-    
+
+    // fast mode unused for now
     if (fast) {
         for (int i = 0; i < tend ; i++) {
             set1->at(i)->fast();
@@ -156,12 +151,10 @@ inline void fuz_fp_list(const char *fname, FINGERPRINT_LIST *fpl)
     if (ifs.is_open()) {
         // iterate through each line and parse the mrshv2 hash
         while(std::getline(ifs, line)) {
-            if (line.length()==0) 
-                break;
+            if (line.length()==0) break;
             
-            if (line[0] == '#')
             // skip comments
-                continue;               
+            if (line[0] == '#') continue;               
             
             FINGERPRINT *fp = init_empty_fingerprint();
             add_new_fingerprint(fpl, fp);
@@ -242,8 +235,8 @@ inline void fuz_fp_list(const char *fname, FINGERPRINT_LIST *fpl)
     }
 }
 
-// returns a fingerprint list as std::string
-inline std::string fuz_fplist_to_string(FINGERPRINT_LIST *fpl)
+// returns an mrshv2 fingerprint list as std::string
+inline std::string fuz_fplist_to_string(const FINGERPRINT_LIST *fpl)
 {
     std::stringstream fpl_str;
     FINGERPRINT *fptmp = fpl->list;
@@ -279,8 +272,8 @@ inline std::string fuz_fplist_to_string(FINGERPRINT_LIST *fpl)
     return fpl_str.str();
 }
 
-// Compares two fingerprint lists and returns results
-inline std::string fuz_compare_two_fplists(FINGERPRINT_LIST *fpl1, FINGERPRINT_LIST *fpl2)
+// Compares two mrshv2 fingerprint lists and returns results
+inline std::string fuz_compare_two_fplists(const FINGERPRINT_LIST *fpl1, const FINGERPRINT_LIST *fpl2)
 {
     std::stringstream out;
     int score;
@@ -314,12 +307,10 @@ inline void fuz_ssdeep_list(const char *fname, std::vector <ssdeep_digest *> &ss
     if (ifs.is_open()) {
         // iterate through each line and parse the ssdeep hash
         while(std::getline(ifs, line)) {
-            if (line.length()==0) 
-                break;
-                
-            if (line[0] == '#')
-            // skip comments
-                continue;               
+            if (line.length()==0) break;
+            
+            // skip comments 
+            if (line[0] == '#') continue;               
             
             ssdeep_digest *sdg = new ssdeep_digest;
             
@@ -351,7 +342,7 @@ inline void fuz_ssdeep_list(const char *fname, std::vector <ssdeep_digest *> &ss
 }
 
 // returns an ssdeep list as std::string
-inline std::string fuz_ssdeep_list_to_string(std::vector <ssdeep_digest *> &ssdeep_list)
+inline std::string fuz_ssdeep_list_to_string(const std::vector <ssdeep_digest *> &ssdeep_list)
 {
     std::stringstream out;
     for(auto &sdg : ssdeep_list) {
@@ -361,7 +352,7 @@ inline std::string fuz_ssdeep_list_to_string(std::vector <ssdeep_digest *> &ssde
 }
 
 // Compares two ssdeep lists and returns results
-inline std::string fuz_compare_two_ssdeep_lists(std::vector <ssdeep_digest *> &ssdeep_list1, std::vector <ssdeep_digest *> &ssdeep_list2, int32_t threshold)
+inline std::string fuz_compare_two_ssdeep_lists(const std::vector <ssdeep_digest *> &ssdeep_list1, const std::vector <ssdeep_digest *> &ssdeep_list2, int32_t threshold)
 {
     int score;
     std::stringstream out;
@@ -648,9 +639,7 @@ static void do_sdhash_import(const class scanner_params &sp, const recursion_con
             const sbuf_t sbuf_to_hash(sbuf, offset, fuz_block_size);
             
             // ignore empty blocks
-            if (empty_sbuf(sbuf_to_hash)){
-                continue;
-            }
+            if (empty_sbuf(sbuf_to_hash)) continue;
             
             // sdbf name = filename + forensic path of the processed block
             sdnames.push_back(new string(sp.fs.get_input_fname() + "-" + sbuf_to_hash.pos0.str()));       
@@ -667,9 +656,7 @@ static void do_sdhash_import(const class scanner_params &sp, const recursion_con
             const sbuf_t sbuf_to_hash(sbuf, offset, fuz_block_size);
             
             // ignore empty blocks
-            if (empty_sbuf(sbuf_to_hash)){
-                continue;
-            }
+            if (empty_sbuf(sbuf_to_hash)) continue;
             
             // sdbf name = filename + forensic path of the processed block
             sdnames.push_back(new string(sp.fs.get_input_fname() + "-" + sbuf_to_hash.pos0.str()));
@@ -689,7 +676,7 @@ static void do_sdhash_import(const class scanner_params &sp, const recursion_con
     
     // free allocations
     for(auto &name : sdnames) delete name;
-    for (uint32_t n=0; n< set1->size(); n++) delete set1->at(n);
+    for (uint32_t n=0; n<set1->size(); n++) delete set1->at(n);
     delete set1;
 }
 
@@ -720,9 +707,7 @@ static void do_sdhash_scan(const class scanner_params &sp, const recursion_contr
                 const sbuf_t sbuf_to_hash(sbuf, offset, fuz_block_size);
                 
                 // ignore empty blocks
-                if (empty_sbuf(sbuf_to_hash)){
-                    continue;
-                }
+                if (empty_sbuf(sbuf_to_hash)) continue;
                 
                 // sdbf name = filename + forensic path of the processed block
                 sdnames.push_back(new string(sp.fs.get_input_fname() + "-" + sbuf_to_hash.pos0.str()));
@@ -738,9 +723,7 @@ static void do_sdhash_scan(const class scanner_params &sp, const recursion_contr
                 const sbuf_t sbuf_to_hash(sbuf, offset, fuz_block_size);
                 
                 // ignore empty blocks
-                if (empty_sbuf(sbuf_to_hash)){
-                    continue;
-                }
+                if (empty_sbuf(sbuf_to_hash)) continue;
                 
                 // sdbf name = filename + forensic path of the processed block
                 sdnames.push_back(new string(sp.fs.get_input_fname() + "-" + sbuf_to_hash.pos0.str()));
@@ -767,9 +750,9 @@ static void do_sdhash_scan(const class scanner_params &sp, const recursion_contr
         cout << "Nothing to compare.\n" << endl;
     }
     
-    for (uint32_t n=0; n< set1->size(); n++) delete set1->at(n);                       
+    for (uint32_t n=0; n<set1->size(); n++) delete set1->at(n);                       
     delete set1;
-    for (uint32_t n=0; n< set2->size(); n++) delete set2->at(n);
+    for (uint32_t n=0; n<set2->size(); n++) delete set2->at(n);
     delete set2;
 }
 
@@ -791,9 +774,7 @@ static void do_mrshv2_import(const class scanner_params &sp, const recursion_con
         const sbuf_t sbuf_to_hash(sbuf, offset, fuz_block_size);
         
         // ignore empty blocks
-        if (empty_sbuf(sbuf_to_hash)){
-            continue;
-        }
+        if (empty_sbuf(sbuf_to_hash)) continue;
         
         // create empty fingerprint for the block
         FINGERPRINT *fp_block = init_empty_fingerprint();
@@ -816,8 +797,6 @@ static void do_mrshv2_import(const class scanner_params &sp, const recursion_con
         
         // fingerprint_destroy(fp_block) not needed if fps are added to fplist
     }
-    
-    //print_fingerprintList(fpl);
     
     // write hashes to file
     std::string fplist_str = fuz_fplist_to_string(fpl);
@@ -850,9 +829,7 @@ static void do_mrshv2_scan(const class scanner_params &sp, const recursion_contr
             const sbuf_t sbuf_to_hash(sbuf, offset, fuz_block_size);
             
             // ignore empty blocks
-            if (empty_sbuf(sbuf_to_hash)){
-                continue;
-            }
+            if (empty_sbuf(sbuf_to_hash)) continue;
             
             // create empty fingerprint for the block
             FINGERPRINT *fp_block = init_empty_fingerprint();
@@ -884,7 +861,6 @@ static void do_mrshv2_scan(const class scanner_params &sp, const recursion_contr
         cout << "Nothing to compare.\n" << endl;
     }
 
-    //print_fingerprintList(fpl2);
     fingerprintList_destroy(fpl1);
     fingerprintList_destroy(fpl2);
 }
@@ -907,9 +883,7 @@ static void do_ssdeep_import(const class scanner_params &sp, const recursion_con
         const sbuf_t sbuf_to_hash(sbuf, offset, fuz_block_size);
         
         // ignore empty blocks
-        if (empty_sbuf(sbuf_to_hash)){
-            continue;
-        }
+        if (empty_sbuf(sbuf_to_hash)) continue;
         
         // create ssdeep digest for the block, push pointer to list
         ssdeep_digest *sdg = new ssdeep_digest;
@@ -936,6 +910,7 @@ static void do_ssdeep_scan(const class scanner_params &sp, const recursion_contr
     // create reference to the sbuf
     const sbuf_t& sbuf = sp.sbuf;
     
+    // vectors to store pointers to the ssdeep digests
     std::vector <ssdeep_digest *> ssdeep_list1;
     std::vector <ssdeep_digest *> ssdeep_list2;
     
@@ -948,9 +923,7 @@ static void do_ssdeep_scan(const class scanner_params &sp, const recursion_contr
             const sbuf_t sbuf_to_hash(sbuf, offset, fuz_block_size);
             
             // ignore empty blocks
-            if (empty_sbuf(sbuf_to_hash)){
-                continue;
-            }
+            if (empty_sbuf(sbuf_to_hash)) continue;
             
             // create ssdeep digest for the block, push pointer to list
             ssdeep_digest *sdg = new ssdeep_digest;
