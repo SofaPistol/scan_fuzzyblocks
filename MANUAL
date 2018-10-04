@@ -32,7 +32,7 @@ Available scan_fuzzyblocks scanner options:
     -S fuz_hashfile             Selects the path to the hashfile used for comparison
                                 Valid only in scan mode (default=fuz_hashfile.txt in the current working directory)
 
-    -S fuz_block_size           Selects the block size to hash, in bytes (default=4096)                               
+    -S fuz_block_size           Selects the block size to hash, in bytes (default=4096, minimum=512)                               
 
     -S fuz_step_size            Selects the step size, in bytes. Scans and imports along this step value (default=fuz_block_size)
                                 Every <fuz_step_size> bytes a block of <fuz_block_size> bytes is hashed
